@@ -30,7 +30,7 @@ public class Biblioteca {
         return this.livros.remove(livro);
     }
 
-    public boolean adicionar(Aluguel novoAluguel){
+    public boolean ALugar(Aluguel novoAluguel){
         if(contaAlugueisAtivosPorCliente(novoAluguel.getCliente()) >= 2) return false;
 
         List<Aluguel> historicoCliente = obterHistoricoAlugueisPorCliente(novoAluguel.getCliente());
@@ -44,7 +44,7 @@ public class Biblioteca {
         return ok;
     }
 
-    public boolean remover(Aluguel aluguel){
+    public boolean Devolver(Aluguel aluguel){
         boolean ok = this.alugueisAtivos.remove(aluguel);
 
         if(ok){
@@ -55,9 +55,17 @@ public class Biblioteca {
         else return false;
     }
 
-    private void ordenaAlugueis(){
-        Collections.sort(this.alugueisAtivos);
-        Collections.sort(this.historicoAlugueis);
+    public String obterRelatorioAlugueis(Calendar minimo, Calendar maximo, Livro livro){
+        String relatorio = String.format("Relatorio de alugueis do livro %s", livro.getNome());
+
+        for(Aluguel aluguel : this.historicoAlugueis)
+            if(aluguel.getLivro().equals(livro)){
+                Cliente cliente = aluguel.getCliente();
+                relatorio += String.format("Data do Aluguel: %s | Nome Cliente: %s | CPF: %s", aluguel.getDataAluguel().toString(),
+                        cliente.getNome(), cliente.getCpf());
+            }
+
+        return relatorio;
     }
 
     public List<Aluguel> obterHistoricoAlugueisPorCliente(Cliente cliente){
@@ -77,6 +85,19 @@ public class Biblioteca {
         return false;
     }
 
+    public Cliente buscaClintePorCpf(String cpf){
+        for(Cliente cliente : this.clientes)
+            if(cliente.getCpf().equals(cpf))
+                return cliente;
+
+        return null;
+    }
+
+    private void ordenaAlugueis(){
+        Collections.sort(this.alugueisAtivos);
+        Collections.sort(this.historicoAlugueis);
+    }
+
     private int contaAlugueisAtivosPorCliente(Cliente cliente){
         int contador = 0;
         for(Aluguel aluguel : this.alugueisAtivos)
@@ -84,18 +105,5 @@ public class Biblioteca {
                 contador++;
 
         return contador;
-    }
-
-    public String obterRelatorioAlugueis(Calendar minimo, Calendar maximo, Livro livro){
-        String relatorio = String.format("Relatorio de alugueis do livro %s", livro.getNome());
-
-        for(Aluguel aluguel : this.historicoAlugueis)
-            if(aluguel.getLivro().equals(livro)){
-                Cliente cliente = aluguel.getCliente();
-                relatorio += String.format("Data do Aluguel: %s | Nome Cliente: %s | CPF: %s", aluguel.getDataAluguel().toString(),
-                        cliente.getNome(), cliente.getCpf());
-            }
-
-        return relatorio;
     }
 }
