@@ -30,21 +30,25 @@ public class Biblioteca {
         return this.livros.remove(livro);
     }
 
-    public boolean ALugar(Aluguel novoAluguel){
-        if(contaAlugueisAtivosPorCliente(novoAluguel.getCliente()) >= 2) return false;
+    public boolean ALugar(Cliente cliente, Livro livro){
+        if(contaAlugueisAtivosPorCliente(cliente) >= 2) return false;
 
-        List<Aluguel> historicoCliente = obterHistoricoAlugueisPorCliente(novoAluguel.getCliente());
+        List<Aluguel> historicoCliente = obterHistoricoAlugueisPorCliente(cliente);
         for(int i = 0; i < 3; i ++)
-            if(historicoCliente.get(i).getLivro() == novoAluguel.getLivro()) return false;
+            if(historicoCliente.get(i).getLivro().equals(livro)) return false;
 
-        if(livroAlugado(novoAluguel.getLivro())) return false;
+        if(livroAlugado(livro)) return false;
+
+        Aluguel novoAluguel = new Aluguel(cliente, livro, Calendar.getInstance());
 
         boolean ok = this.alugueisAtivos.add(novoAluguel);
         this.ordenaAlugueis();
         return ok;
     }
 
-    public boolean Devolver(Aluguel aluguel){
+    public boolean Devolver(Cliente cliente, Livro livro){
+        Aluguel aluguel = this.buscaAluguelAtivo(cliente, livro);
+
         boolean ok = this.alugueisAtivos.remove(aluguel);
 
         if(ok){
@@ -89,6 +93,14 @@ public class Biblioteca {
         for(Cliente cliente : this.clientes)
             if(cliente.getCpf().equals(cpf))
                 return cliente;
+
+        return null;
+    }
+
+    private Aluguel buscaAluguelAtivo(Cliente cliente, Livro livro){
+        for(Aluguel aluguel : this.alugueisAtivos)
+            if(aluguel.getCliente().equals(cliente) && aluguel.getLivro().equals(livro))
+                return aluguel;
 
         return null;
     }

@@ -25,6 +25,6 @@ public class Cliente{
         if(o == this) return true;
         if(!(o instanceof Cliente)) return false;
 
-        return ((Cliente) o).getCpf() == this.cpf;
+        return ((Cliente) o).getCpf().equals(this.cpf);
     }
 }

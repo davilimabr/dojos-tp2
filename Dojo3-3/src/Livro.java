@@ -41,6 +41,6 @@ public class Livro {
         if(o == this) return true;
         if(!(o instanceof Livro)) return false;
 
-        return ((Livro) o).getNome() == this.nome;
+        return ((Livro) o).getNome().equals(this.nome);
     }
 }
