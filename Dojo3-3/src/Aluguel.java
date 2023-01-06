@@ -1,39 +1,57 @@
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
 
-public class Aluguel implements Comparable<Aluguel> {
+public class Aluguel{
     private Cliente cliente;
     private Livro livro;
-    private Calendar dataAluguel;
+    private Date dataAluguel;
+    private Date dataDevolucao;
 
-    public Aluguel(Cliente cliente, Livro livro, Calendar dataAluguel){
+    public Aluguel(Cliente cliente, Livro livro, Date dataAluguel){
         this.cliente = cliente;
         this.livro = livro;
         this.dataAluguel = dataAluguel;
+        this.dataDevolucao = null;
+
+        cliente.registrarAluguel(this);
+        livro.registrarAluguel(this);
     }
 
     public Cliente getCliente() {
-        return new Cliente(this.cliente);
+        return cliente;
     }
 
     public Livro getLivro() {
-        return new Livro(this.livro);
+        return livro;
     }
 
-    public Calendar getDataAluguel() {
-        return (Calendar) dataAluguel.clone();
+    public Date getDataAluguel() {
+        return dataAluguel;
+    }
+
+    public Date getDataDevolucao() {
+        return dataDevolucao;
+    }
+
+    public boolean estaAtivo(){
+        return this.dataDevolucao == null;
+    }
+
+    public void encerrar(){
+        this.dataDevolucao = Calendar.getInstance().getTime();
     }
 
     @Override
-    public boolean equals(Object o){
-        if(o == this) return true;
-        if(!(o instanceof Aluguel)) return false;
-
-        Aluguel aluguel = ((Aluguel) o);
-        return aluguel.getCliente().equals(this.cliente) && aluguel.getLivro().equals(this.livro);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Aluguel aluguel = (Aluguel) o;
+        return livro.equals(aluguel.livro);
     }
 
     @Override
-    public int compareTo(Aluguel aluguel){
-        return this.dataAluguel.compareTo(aluguel.getDataAluguel());
+    public int hashCode() {
+        return Objects.hash(livro);
     }
 }

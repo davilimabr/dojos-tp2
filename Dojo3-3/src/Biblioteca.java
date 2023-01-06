@@ -3,19 +3,20 @@ import java.util.*;
 public class Biblioteca {
     private List<Cliente> clientes;
     private List<Livro> livros;
-    private List<Aluguel> alugueisAtivos;
-    private List<Aluguel> historicoAlugueis;
-
+    private List<Aluguel> alugueis;
 
     public Biblioteca(){
         this.clientes = new ArrayList<Cliente>();
         this.livros = new ArrayList<Livro>();
-        this.alugueisAtivos = new ArrayList<Aluguel>();
-        this.historicoAlugueis = new ArrayList<Aluguel>();
+        this.alugueis = new ArrayList<Aluguel>();
     }
 
     public boolean adicionar(Cliente novoCliente){
-        return this.clientes.add(novoCliente);
+        if(!this.clientes.contains(novoCliente)){
+            this.clientes.add(novoCliente);
+            return true;
+        }
+        return false;
     }
 
     public boolean remover(Cliente cliente){
@@ -23,70 +24,42 @@ public class Biblioteca {
     }
 
     public boolean adicionar(Livro novoLivro){
-        return this.livros.add(novoLivro);
+        if(!this.livros.contains(novoLivro)){
+            this.livros.add(novoLivro);
+            return true;
+        }
+        return false;
     }
 
     public boolean remover(Livro livro){
         return this.livros.remove(livro);
     }
 
-    public boolean ALugar(Cliente cliente, Livro livro){
-        if(contaAlugueisAtivosPorCliente(cliente) >= 2) return false;
+    public void alugar(Cliente cliente, Livro livro) throws Exception{
+        if(cliente.obterQuantidadeAlugueisAtivos() >= 2)
+            throw new Exception("O cliente já possui dois livros emprestados.");
+        if(cliente.livroAlugadoUltimosTresAlugueis(livro))
+            throw new Exception("Cliente já alugou esse livro nos últimos três emprestimos");
+        if(livro.estaALugado())
+            throw new Exception("Livro já está emprestado");
 
-        List<Aluguel> historicoCliente = obterHistoricoAlugueisPorCliente(cliente);
-        for(int i = 0; i < 3; i ++)
-            if(historicoCliente.get(i).getLivro().equals(livro)) return false;
-
-        if(livroAlugado(livro)) return false;
-
-        Aluguel novoAluguel = new Aluguel(cliente, livro, Calendar.getInstance());
-
-        boolean ok = this.alugueisAtivos.add(novoAluguel);
-        this.ordenaAlugueis();
-        return ok;
+        Date dataAluguel = Calendar.getInstance().getTime();
+        this.alugueis.add(new Aluguel(cliente, livro, dataAluguel));
     }
 
-    public boolean Devolver(Cliente cliente, Livro livro){
-        Aluguel aluguel = this.buscaAluguelAtivo(cliente, livro);
-
-        boolean ok = this.alugueisAtivos.remove(aluguel);
-
-        if(ok){
-            this.historicoAlugueis.add(aluguel);
-            ordenaAlugueis();
-            return true;
-        }
-        else return false;
+    public void devolver(Livro livro){
+         livro.devolver();
     }
 
-    public String obterRelatorioAlugueis(Calendar minimo, Calendar maximo, Livro livro){
-        String relatorio = String.format("Relatorio de alugueis do livro %s", livro.getNome());
-
-        for(Aluguel aluguel : this.historicoAlugueis)
-            if(aluguel.getLivro().equals(livro)){
-                Cliente cliente = aluguel.getCliente();
-                relatorio += String.format("Data do Aluguel: %s | Nome Cliente: %s | CPF: %s", aluguel.getDataAluguel().toString(),
-                        cliente.getNome(), cliente.getCpf());
-            }
+    public String obterRelatorioAlugueis(Date minimo, Date maximo){
+        String relatorio = "";
+        for(Aluguel aluguel : this.alugueis)
+            if(aluguel.getDataAluguel().compareTo(minimo) > 0 && aluguel.getDataDevolucao().compareTo(maximo) < 0)
+                relatorio += String.format("Cliente:\n%s\nLivro:\n%s\nData Aluguel: %s\nData Devolução: %s\n",
+                        aluguel.getCliente().toString(), aluguel.getLivro().toString(), aluguel.getDataAluguel().toString(),
+                        aluguel.getDataDevolucao().toString());
 
         return relatorio;
-    }
-
-    public List<Aluguel> obterHistoricoAlugueisPorCliente(Cliente cliente){
-        List<Aluguel> alugueisCliente = new ArrayList<Aluguel>();
-
-        for(Aluguel aluguel : this.historicoAlugueis)
-            if(aluguel.getCliente().equals(cliente))
-                alugueisCliente.add(aluguel);
-
-        return alugueisCliente;
-    }
-
-    public boolean livroAlugado(Livro livro){
-        for(Aluguel aluguel : this.alugueisAtivos)
-            if(aluguel.getLivro().equals(livro)) return true;
-
-        return false;
     }
 
     public Cliente buscaClintePorCpf(String cpf){
@@ -97,25 +70,12 @@ public class Biblioteca {
         return null;
     }
 
-    private Aluguel buscaAluguelAtivo(Cliente cliente, Livro livro){
-        for(Aluguel aluguel : this.alugueisAtivos)
-            if(aluguel.getCliente().equals(cliente) && aluguel.getLivro().equals(livro))
-                return aluguel;
+    public Livro buscaLivroPorId(String id){
+        for(Livro livro : this.livros)
+            if(livro.getId().equals(id))
+                return livro;
 
         return null;
     }
 
-    private void ordenaAlugueis(){
-        Collections.sort(this.alugueisAtivos);
-        Collections.sort(this.historicoAlugueis);
-    }
-
-    private int contaAlugueisAtivosPorCliente(Cliente cliente){
-        int contador = 0;
-        for(Aluguel aluguel : this.alugueisAtivos)
-            if(aluguel.getCliente().equals(cliente))
-                contador++;
-
-        return contador;
-    }
 }

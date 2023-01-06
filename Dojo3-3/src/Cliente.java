@@ -1,15 +1,17 @@
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 public class Cliente{
     private String nome;
     private String cpf;
 
+    private List<Aluguel> alugueis;
+
     public Cliente(String nome, String cpf){
         this.nome = nome;
         this.cpf = cpf;
-    }
-
-    public Cliente(Cliente cliente){
-        this.nome = cliente.getNome();
-        this.cpf = cliente.getCpf();
+        this.alugueis = new ArrayList<>();
     }
 
     public String getNome() {
@@ -18,6 +20,54 @@ public class Cliente{
 
     public String getCpf() {
         return cpf;
+    }
+
+    public int obterQuantidadeAlugueisAtivos(){
+        int contador = 0;
+        for(Aluguel aluguel : this.alugueis)
+            if(aluguel.estaAtivo())
+                contador++;
+
+        return contador;
+    }
+
+    public boolean livroAlugadoUltimosTresAlugueis(Livro livro){
+        for(int i = this.alugueis.size(); i > this.alugueis.size() - 3; i--){
+            if(this.alugueis.size() < 3)
+                return false;
+            if(this.alugueis.get(i).getLivro().equals(livro))
+                return true;
+        }
+        return false;
+    }
+
+    public void registrarAluguel(Aluguel aluguel){
+        if(!this.alugueis.contains(aluguel))
+            this.alugueis.add(aluguel);
+    }
+
+    public String obterRelatorioAlugueis(){
+        StringBuilder relatorio = new StringBuilder(String.format("Alugueis realizados por: %\n", this.toString()));
+
+        for(Aluguel aluguel : this.alugueis){
+            String relatorioAluguel = aluguel.getLivro().toString();
+
+            Date dataAluguel = aluguel.getDataAluguel();
+            Date dataDevolucao = aluguel.getDataDevolucao();
+
+            String textoDataDevolucao = dataDevolucao == null ? "" :dataDevolucao.toString();
+
+            relatorioAluguel += String.format("  Data aluguel: %s  |  Data devolução: %s", dataAluguel.toString(),
+                    textoDataDevolucao);
+
+            relatorio.append(relatorioAluguel);
+        }
+        return relatorio.toString();
+    }
+
+    @Override
+    public String toString(){
+        return String.format("Nome: %s  |  CPF: %s", this.nome, this.cpf);
     }
 
     @Override
