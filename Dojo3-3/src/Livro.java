@@ -1,12 +1,12 @@
 import java.util.*;
 
 public class Livro {
-    private String id;
-    private String nome;
-    private String autor;
-    private String editora;
-    private Date publicacao;
-    private List<Aluguel> alugueis;
+        private String id;
+        private String nome;
+        private String autor;
+        private String editora;
+        private Date publicacao;
+        private List<Aluguel> alugueis;
 
     public Livro(String id, String nome, String autor, String editora, Date publicacao){
         this.id = id;
@@ -43,19 +43,22 @@ public class Livro {
     }
 
     public void devolver(){
-        this.obterUltimoAluguel().encerrar();
+        for(Aluguel aluguel : this.alugueis)
+            if(aluguel.estaAtivo()){
+                aluguel.encerrar();
+                break;
+            }
     }
 
     public boolean estaALugado(){
         if(this.alugueis.isEmpty())
             return false;
 
-        return this.obterUltimoAluguel().estaAtivo();
-    }
+        for(Aluguel aluguel : this.alugueis)
+            if(aluguel.estaAtivo())
+                return true;
 
-    private Aluguel obterUltimoAluguel(){
-        int ultimaPosicao = this.alugueis.size() > 0 ? this.alugueis.size() -1: 0;
-        return this.alugueis.get(ultimaPosicao);
+        return false;
     }
 
     public String obterRelatorioAlugueis(){
