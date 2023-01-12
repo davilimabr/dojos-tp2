@@ -47,7 +47,7 @@ public class Aluguel{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Aluguel aluguel = (Aluguel) o;
-        return livro.equals(aluguel.livro);
+        return Objects.equals(cliente, aluguel.cliente) && Objects.equals(livro, aluguel.livro) && Objects.equals(dataAluguel, aluguel.dataAluguel) && Objects.equals(dataDevolucao, aluguel.dataDevolucao);
     }
 
     @Override

@@ -22,13 +22,13 @@ public class Cliente{
         return cpf;
     }
 
-    public int obterQuantidadeAlugueisAtivos(){
+    public boolean possuiMaisQueDoisAlugueisAtivos(){
         int contador = 0;
         for(Aluguel aluguel : this.alugueis)
             if(aluguel.estaAtivo())
                 contador++;
 
-        return contador;
+        return contador >= 2;
     }
 
     public boolean livroAlugadoUltimosTresAlugueis(Livro livro){
@@ -47,7 +47,7 @@ public class Cliente{
     }
 
     public String obterRelatorioAlugueis(){
-        StringBuilder relatorio = new StringBuilder(String.format("Alugueis realizados por: %\n", this.toString()));
+        StringBuilder relatorio = new StringBuilder(String.format("Alugueis realizados por: %s\n", this));
 
         for(Aluguel aluguel : this.alugueis){
             String relatorioAluguel = aluguel.getLivro().toString();
@@ -57,7 +57,7 @@ public class Cliente{
 
             String textoDataDevolucao = dataDevolucao == null ? "" :dataDevolucao.toString();
 
-            relatorioAluguel += String.format("  Data aluguel: %s  |  Data devolução: %s", dataAluguel.toString(),
+            relatorioAluguel += String.format("  Data aluguel: %s  |  Data devolução: %s\n", dataAluguel.toString(),
                     textoDataDevolucao);
 
             relatorio.append(relatorioAluguel);

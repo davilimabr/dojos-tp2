@@ -62,7 +62,7 @@ public class Livro {
     }
 
     public String obterRelatorioAlugueis(){
-        StringBuilder relatorio = new StringBuilder(String.format("Alugueis do livro: %s\n", this.toString()));
+        StringBuilder relatorio = new StringBuilder(String.format("Alugueis do livro: %s\n", this));
 
         for(Aluguel aluguel : this.alugueis){
             String relatorioAluguel = aluguel.getCliente().toString();
@@ -70,9 +70,9 @@ public class Livro {
             Date dataAluguel = aluguel.getDataAluguel();
             Date dataDevolucao = aluguel.getDataDevolucao();
 
-            String textoDataDevolucao = dataDevolucao == null ? "" :dataDevolucao.toString();
+            String textoDataDevolucao = dataDevolucao == null ? "" : dataDevolucao.toString();
 
-            relatorioAluguel += String.format("  Data aluguel: %s  |  Data devolução: %s", dataAluguel.toString(),
+            relatorioAluguel += String.format("  Data aluguel: %s  |  Data devolução: %s\n", dataAluguel.toString(),
                     textoDataDevolucao);
 
             relatorio.append(relatorioAluguel);

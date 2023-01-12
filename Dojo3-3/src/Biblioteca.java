@@ -36,7 +36,7 @@ public class Biblioteca {
     }
 
     public void alugar(Cliente cliente, Livro livro) throws Exception{
-        if(cliente.obterQuantidadeAlugueisAtivos() >= 2)
+        if(cliente.possuiMaisQueDoisAlugueisAtivos())
             throw new Exception("O cliente já possui dois livros emprestados.");
         if(cliente.livroAlugadoUltimosTresAlugueis(livro))
             throw new Exception("Cliente já alugou esse livro nos últimos três emprestimos");
@@ -54,7 +54,7 @@ public class Biblioteca {
     public String obterRelatorioAlugueis(Date minimo, Date maximo){
         String relatorio = "";
         for(Aluguel aluguel : this.alugueis)
-            if(aluguel.getDataAluguel().compareTo(minimo) > 0 && aluguel.getDataDevolucao().compareTo(maximo) < 0)
+            if(aluguel.getDataAluguel().compareTo(minimo) > 0 && aluguel.getDataAluguel().compareTo(maximo) < 0)
                 relatorio += String.format("Cliente:\n%s\nLivro:\n%s\nData Aluguel: %s\nData Devolução: %s\n",
                         aluguel.getCliente().toString(), aluguel.getLivro().toString(), aluguel.getDataAluguel().toString(),
                         aluguel.getDataDevolucao().toString());
