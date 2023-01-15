@@ -4,11 +4,12 @@ import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 public class Menu {
-    private final Scanner teclado = new Scanner(System.in);
-    private Biblioteca biblioteca;
+    private final Scanner teclado;
+    private final Biblioteca biblioteca;
 
     public Menu(){
         this.biblioteca = new Biblioteca();
+        this.teclado =  new Scanner(System.in);
     }
 
     public void exibirMenuPrincipal(){
