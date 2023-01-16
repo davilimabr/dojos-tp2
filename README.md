@@ -1,9 +1,13 @@
 
 ## Índice
-- Dojo 3
+- [Dojo 3](#dojo-3)
     - Exercício 1
     - Exercício 2
     - Exercício 3
+- [Dojo 4](#dojo-4)
+    - Exercício 1
+
+<br>
 
 ## Dojo 3
 
@@ -78,6 +82,34 @@ na biblioteca. Para isto deve receber um filtro por data (min. e max.) e livro o
 
 No final, tente identificar os relacionamentos existentes no cenário descrito, e
 classifique-os com relação a sua cardinalidade.
+
+<br>
+
+## Dojo 4
+
+### Exercício 1
+Instruções
+Descrição geral: As regras do Bingo são simples, já que quatros princípios básicos, de fácil entendimento, estabelecem as
+normas do jogo. São eles:
+- Cada jogador pode usar de 1 a 4 cartelas (com 5 linhas e 5 colunas) de 24 números aleatórios de 1 a 75.
+- A cada rodada um número é sorteado e o jogador verifica se ele está na sua cartela.
+- O jogador completa sua(s) cartela(s) marcando os números sorteados.
+- O objetivo é completar linhas, colunas ou a cartela inteira. Vence o jogador que completar a cartela.
+Implementação
+- Crie as classes Sorteador, Sacola, Jogador, Cartela
+- O Sorteador sorteará os números a partir da sacola. Dica: tenha como atributo uma instância do tipo Set para
+armazenar as “bolas” (números) do bingo
+- A Sacola deve conter 75 números
+- Sorteador é quem sorteia as bolas a partir da Sacola.
+- Jogador “ouve” os números sorteados pelo Sorteador e marca a pontuação na Cartela
+- A Cartela é uma matriz de números (linhas e colunas)
+- O Bingo termina quando alguém completar uma cartela. Os jogadores que fizerem linhas e colunas devem ser
+registrados também e apresentados ao final
+- Também devem ser apresentadas as cartelas finais (preenchidas) de cada jogador
+- A cada sorteio o programa deve exibir se alguma cartela continha o número sorteado e também o estado atual das
+cartelas dos jogadores
+- Utilize a biblioteca no link para imprimir as cartelas como tabela. Baixe o jar e adicione no seu projeto.
+
 
 
 [dojo3-1]: <https://github.com/davilimabr/dojos-tp2/tree/main/Dojo3-1>
