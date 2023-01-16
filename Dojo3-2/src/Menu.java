@@ -3,52 +3,94 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
-    private final Scanner teclado = new Scanner(System.in);
-    private List<Album> albuns;
+    private final Scanner teclado;
+    private final List<Album> albuns;
 
     public Menu(){
         this.albuns = new ArrayList<Album>();
+        this.teclado = new Scanner(System.in);
     }
 
-    public void mostrarMenuPrincipal(){
-        try{
-            Album albumEscolhido = this.albuns.get(mostrarMenuEscolhaAlbum()-1);
-            mostrarMenuAlteracaoDeAlbuns(albumEscolhido);
-        }catch (Exception ex){
-            this.imprimir(ex.getMessage());
+    public void exibirMenuPrincipal(){
+        boolean continua = true;
+        while(continua){
+            try{
+                int opcao = this.exibirMenuEscolhaCriarOuManipular();
+
+                if(opcao == 1)
+                    this.menuCriarNovoAlbum();
+                else{
+                    Album albumEscolhido = this.albuns.get(mostrarMenuEscolhaAlbum()-1);
+                    mostrarMenuAlteracaoDeAlbuns(albumEscolhido);
+                }
+            }catch (Exception ex){
+                this.imprimir(ex.getMessage());
+            }
+
+            this.imprimir("Continua? 1 - sim  2 - nao");
+            int opcao = teclado.nextInt();
+            if(opcao == 2)
+                continua = false;
         }
     }
-    private int mostrarMenuEscolhaAlbum() throws Exception{
-        if(this.albuns.isEmpty()){
-            this.imprimir("Nenhum album existente");
-            throw new Exception("Nenhum album existente");
+
+    private int exibirMenuEscolhaCriarOuManipular(){
+        int opcao = 0;
+        while(opcao <= 0 || opcao > 2){
+            this.imprimir("""
+                    Deseja:
+                    (1) Criar novo album
+                    (2) Manipular album existente
+                    """);
+
+            opcao = teclado.nextInt();
         }
+        return opcao;
+    }
+
+    private void menuCriarNovoAlbum(){
+        this.imprimir("Digite o nome do album e do artista");
+
+        teclado.nextLine();
+        String nomeAlbum = teclado.nextLine();
+        String nomeArtista = teclado.nextLine();
+        List<Musica> musicas = this.lerMusicas();
+
+        Album novoAlbum = new Album(nomeAlbum, nomeArtista, musicas);
+
+        this.imprimeSucessoOuErro(this.albuns.add(novoAlbum));
+    }
+
+    private int mostrarMenuEscolhaAlbum() throws Exception{
+        if(this.albuns.isEmpty())
+            throw new Exception("Nenhum album existente");
 
         int opcao = 0;
-        while(opcao < 0 || opcao > this.albuns.size()){
-            for(int i = 0; i < this.albuns.size(); i++){
+        while(opcao <= 0 || opcao > this.albuns.size()){
+            for(int i = 0; i < this.albuns.size(); i++)
                 this.imprimir(String.format("%d. Nome: %s",i+1, this.albuns.get(i).getNome()));
-            }
 
             this.imprimir("\nEscolha o album:");
             opcao = teclado.nextInt();
-            return opcao;
         }
-        throw new Exception("Album inválido");
+        return opcao;
     }
 
     private void mostrarMenuAlteracaoDeAlbuns(Album album){
         int opcao = 0;
         while(opcao < 7){
-            this.imprimir("(1) Adicionar musica");
-            this.imprimir("(2) Remover musica");
-            this.imprimir("(3) Checar se uma musica esta no album");
-            this.imprimir("(4) Verificar nome da e-nesima musica");
-            this.imprimir("(5) Imprimir dados do album");
-            this.imprimir("(6) Alterar posicao de uma musica na lista");
-            this.imprimir("(7) Sair");
+            this.imprimir("""
+                    (1) Adicionar musica
+                    (2) Remover musica
+                    (3) Checar se uma musica esta no album
+                    (4) Verificar nome da e-nesima musica
+                    (5) Imprimir dados do album
+                    (6) Alterar posicao de uma musica na lista
+                    (7) Sair
+                    """);
 
             opcao = teclado.nextInt();
+            teclado.nextLine(); //limpa buffer
 
             switch (opcao){
                 case 1 -> menuAdicionarMusica(album);
@@ -62,15 +104,8 @@ public class Menu {
     }
 
     private void menuAdicionarMusica(Album album){
-        this.imprimir("Digite o nome, artista e duracao da musica");
-
-        String nome = teclado.nextLine();
-        String artista = teclado.nextLine();
-        int duracao = teclado.nextInt();
-
-        Musica novaMusica = new Musica(nome, artista, duracao);
-
-        this.imprimeSucessoOuErro(album.adicionarMusica(novaMusica));
+        boolean ok = album.adicionarMusica(this.lerMusica());
+        this.imprimeSucessoOuErro(ok);
     }
 
     private void menuRemoverMusica(Album album){
@@ -89,7 +124,10 @@ public class Menu {
 
         boolean existe = album.buscaMusicaPorNome(nome) != null ? true : false;
 
-        this.imprimeSucessoOuErro(existe);
+        if(existe)
+            this.imprimir("Essa musica faz parte do album");
+        else
+            this.imprimir("Essa musica nao faz parte do album");
     }
 
     private void menuVerificarEnesimaMusica(Album album){
@@ -116,6 +154,29 @@ public class Menu {
         int posicaoDestino = teclado.nextInt();
 
         this.imprimeSucessoOuErro(album.alterarPosicaoMusica(posicaoOrigem, posicaoDestino));
+    }
+
+    private Musica lerMusica(){
+        this.imprimir("Digite o nome, artista e duracao da musica");
+
+        String nome = teclado.nextLine();
+        String artista = teclado.nextLine();
+        //teclado.nextLine(); // limpa buffer
+        int duracao = teclado.nextInt();
+
+        return new Musica(nome, artista, duracao);
+    }
+
+    private List<Musica> lerMusicas(){
+        this.imprimir("Digite a quantidade de musicas que deseja inserir");
+        int quantidade = teclado.nextInt();
+
+        List<Musica> musicas = new ArrayList<>();
+
+        for(int i = 0; i < quantidade; i++)
+            musicas.add(this.lerMusica());
+
+        return musicas;
     }
 
     public void imprimeSucessoOuErro(boolean operacao){

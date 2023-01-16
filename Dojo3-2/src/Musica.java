@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Musica {
     private String nome;
     private String artista;
@@ -24,9 +26,9 @@ public class Musica {
     @Override
     public boolean equals(Object o){
         if(o == this) return true;
-        if(!(o instanceof Musica)) return false;
+        if(o == null || o.getClass() != this.getClass()) return false;
 
         Musica musica = (Musica) o;
-        return musica.getNome() == this.nome && musica.getArtista() == this.artista && musica.getDuracaoSegundos() == this.duracaoSegundos
+        return musica.getNome() == this.nome && musica.getArtista() == this.artista && musica.getDuracaoSegundos() == this.duracaoSegundos;
     }
 }
